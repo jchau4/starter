@@ -14,5 +14,6 @@ public class Cat
     public void ChangeAffection(int amount)
     {
         affection += amount; // modifies private affection field
+        affection = Mathf.Clamp(affection, -500, 500);
     }
 }

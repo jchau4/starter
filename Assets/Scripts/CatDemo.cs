@@ -16,7 +16,7 @@ public class CatDemo : MonoBehaviour
          /\_/\
         (=^.^=)");
         myCat.ChangeAffection(lemon.GetAffectionChange());
-        Debug.Log("Cat's affection has decreased to " + myCat.Affection + @". . .
+        Debug.Log("Cat's affection has decreased to " + myCat.Affection + @" . . .
             Cat disappointed 
             /\_/\
             (>.<)");

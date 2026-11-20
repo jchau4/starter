@@ -1,5 +1,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class CatInteraction : MonoBehaviour
 {
@@ -8,6 +10,7 @@ public class CatInteraction : MonoBehaviour
     private Cat myCat = new Cat();
     private Transform selectedObject;
     private Vector3 originalPosition;
+    private bool gameOver = false;
     // attributes: serializefield attribute tells Unity to display and serialize private view in inspector
     // allowing assigning references/adjust values without making field public
     [SerializeField] private GameObject catObject;
@@ -16,6 +19,12 @@ public class CatInteraction : MonoBehaviour
     [SerializeField] private Texture2D angryTexture;
     [SerializeField] private Texture2D cryingTexture;
     [SerializeField] private SkinnedMeshRenderer catBodyRenderer;
+    [SerializeField] private TMP_Text endingTitle;
+    [SerializeField] private TMP_Text endingDesc;
+    [SerializeField] private TMP_Text restartText;
+    [SerializeField] private GameObject endingPanel;
+    [SerializeField] private Image endingBackground;
+
     private float expressionTimer = 0f;
     private float angryTimer = 10f;
     [SerializeField] private float expressionDuration = 3f;
@@ -23,22 +32,23 @@ public class CatInteraction : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        restartText.text = "Press R to Restart";
     }
 
     // Update is called once per frame
+    // mouse movement here as a custom component that reads input and uses Update() to change over time
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!gameOver && Input.GetMouseButtonDown(0))
         {
             SelectFood();
         }
-        if (Input.GetMouseButton(0) && selectedObject != null)
+        if (!gameOver && Input.GetMouseButton(0) && selectedObject != null)
         {
             DragFood();
 
         }
-        if (Input.GetMouseButtonUp(0) && selectedObject != null)
+        if (!gameOver && Input.GetMouseButtonUp(0) && selectedObject != null)
         {
             ReleaseFood();
         }
@@ -86,7 +96,7 @@ public class CatInteraction : MonoBehaviour
             {
                 bigBackCount++;
                 Debug.Log("Cat has been fed " + bigBackCount + " times!");
-                feedCat();
+                FeedCat();
                 if (bigBackCount == 10)
                 {
                     Debug.Log("Don't you think the cat has had enough?");
@@ -96,7 +106,7 @@ public class CatInteraction : MonoBehaviour
         selectedObject.position = originalPosition;
         selectedObject = null;
     }
-    private void feedCat()
+    private void FeedCat()
     {
         if (selectedObject.gameObject.name == "Herring")
         {
@@ -113,6 +123,7 @@ public class CatInteraction : MonoBehaviour
                         (=^.^=)");
             catBodyRenderer.material.SetTexture("_BaseMap", happyTexture);
             expressionTimer = expressionDuration;
+            CheckEnding();
         }
         else if (selectedObject.gameObject.name == "lemon")
         {
@@ -129,6 +140,27 @@ public class CatInteraction : MonoBehaviour
                 catBodyRenderer.material.SetTexture("_BaseMap", angryTexture);
                 expressionTimer = angryTimer;
             }
+            CheckEnding();
+        }
+    }
+    // Message displayed for winning/losing game
+    private void CheckEnding()
+    {
+        if (myCat.Affection >= 100)
+        {
+            endingTitle.text = "GOOD ENDING 1/2";
+            endingDesc.text = "Cat loves you!";
+            gameOver = true;
+            endingBackground.color = new Color32(23, 20, 33, 255);
+            endingPanel.SetActive(true);
+        }
+        else if (myCat.Affection <= -100)
+        {
+            endingTitle.text = "BAD ENDING 2/2";
+            endingDesc.text = "That's unfortunate";
+            gameOver = true;
+            endingBackground.color = new Color32(9, 11, 18, 255);
+            endingPanel.SetActive(true);
         }
     }
 }
